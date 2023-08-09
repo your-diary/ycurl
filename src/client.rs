@@ -42,8 +42,10 @@ impl Client {
 
         client = client
             .headers(create_headermap(&request.header))
-            .query(&request.params)
-            .body(serde_json::to_string_pretty(&request.body).unwrap());
+            .query(&request.params);
+        if let Some(b) = &request.body {
+            client = client.body(serde_json::to_string_pretty(b).unwrap());
+        }
 
         Ok(Self { client })
     }

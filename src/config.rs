@@ -80,7 +80,7 @@ pub struct Request {
     pub method: HTTPMethod,
     pub header: HashMap<String, String>,
     pub params: HashMap<String, Value>,
-    pub body: HashMap<String, Value>,
+    pub body: Option<HashMap<String, Value>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
