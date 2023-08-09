@@ -99,6 +99,17 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 
 Lines start with `#`, optionally preceded by spaces, are treated as comments.
 
+```json
+{
+    "base_url": "http://localhost:3000",
+    #This is a comment.
+    "default_header": {
+        "Content-Type": "application/json"
+    },
+    ...
+}
+```
+
 ### 3.3 Variable Expansion
 
 Global variables are defined as `Map<String, String>` in the top-level `variables` field, and local-to-request variables are defined in `variables` field inside the request definition.
@@ -133,7 +144,8 @@ Every expression of the form `${<variable name>}` is replaced by the value of th
             "name": "a",
             ...
             "body": {
-                "name": "${name}", #This is interpreted as `"name": "Mike"`.
+                #This is interpreted as `"name": "Mike"`.
+                "name": "${name}",
                 "age": 18
             }
         },
