@@ -33,7 +33,7 @@ impl Config {
         let ret = serde_json::from_str::<Self>(&json_string)?;
         ret.validate()?;
 
-        //performs variable expansions
+        //performs variable expansion
         let mut expanded_json_string = json_string.clone();
         let regex = Regex::new(r#"\$\{([^}]+)}"#)?;
         let mut processed = HashSet::new();
