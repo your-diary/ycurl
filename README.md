@@ -25,14 +25,15 @@ $ cargo install --path .
 ### 2.2 Run
 
 ```bash
-$ ycurl [-f <file>] <index> #sends a request
-$ ycurl --list              #lists all of the requests defined in the config file
+$ ycurl [-f <file>] <index> #sends a request of the given index/name
+$ ycurl [-f <file>]         #lists all of the requests defined in the config file
 ```
 
 ### 2.3 Show Help
 
 ```bash
 $ ycurl --help
+
 Usage: ycurl [OPTIONS] [INDEX]
 
 Arguments:
@@ -40,7 +41,6 @@ Arguments:
 
 Options:
   -f, --file <FILE>  Config file [default: ./ycurl.json]
-  -l, --list         Index of the request sent
   -h, --help         Print help
   -V, --version      Print version
 ```

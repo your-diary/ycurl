@@ -21,8 +21,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let config = config::Config::new(&args.file)?;
 
-    //`--list` option
-    if (args.list) {
+    if (args.index.is_none()) {
         let mut l = vec![];
         for i in 0..config.requests.len() {
             l.push(format!(
@@ -41,9 +40,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Ok(());
     }
 
-    if (args.index.is_none()) {
-        return Err("no index specified".into());
-    }
     let request = if let Ok(i) = args.index.as_ref().unwrap().parse::<usize>() {
         if (i >= config.requests.len()) {
             return Err("index out of bounds".into());
