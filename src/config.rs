@@ -32,6 +32,27 @@ impl Config {
 
         let ret = serde_json::from_str::<Self>(&json_string)?;
         ret.validate()?;
+
+        //performs variable expansions
+        let mut expanded_json_string = json_string.clone();
+        let regex = Regex::new(r#"\$\{([^}]+)}"#)?;
+        let mut processed = HashSet::new();
+        for c in regex.captures_iter(&json_string) {
+            let placeholder = c.get(0).unwrap().as_str();
+            let variable_name = c.get(1).unwrap().as_str();
+            if (processed.contains(&variable_name)) {
+                continue;
+            }
+            processed.insert(variable_name);
+            if let Some(v) = ret.variables.get(variable_name) {
+                expanded_json_string = expanded_json_string.replace(placeholder, v);
+            } else {
+                return Err(format!("variable `{}` is not defined", variable_name).into());
+            }
+        }
+        let ret = serde_json::from_str::<Self>(&expanded_json_string)?;
+        ret.validate()?;
+
         Ok(ret)
     }
 
