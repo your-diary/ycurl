@@ -78,12 +78,16 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
         {
             "name": "create_user",
             "description": "creates a user",
+            "variables": {
+                "password": "abc"
+            },
             "url": "/user",
             "method": "POST",
             "header": {},
             "params": {},
             "body": {
                 "name": "${name}",
+                "password": "${password}",
                 "age": 18
             }
         }
@@ -97,7 +101,7 @@ Lines start with `#`, optionally preceded by spaces, are treated as comments.
 
 ### 3.3 Variable Expansion
 
-Variables are defined as `Map<String, String>` in the top-level `variables` field.
+Global variables are defined as `Map<String, String>` in the top-level `variables` field, and local-to-request variables are defined in `variables` field inside the request definition.
 
 ```json
 {
@@ -106,6 +110,16 @@ Variables are defined as `Map<String, String>` in the top-level `variables` fiel
         "name": "Mike"
     },
     ...
+    "requests": [
+        {
+            "name": "create_user",
+            "description": "creates a user",
+            "variables": {
+                "password": "abc"
+            },
+            ...
+        }
+    ]
 }
 ```
 
