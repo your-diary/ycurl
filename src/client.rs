@@ -24,7 +24,7 @@ impl Client {
         let url = if (request.url.starts_with("http")) {
             request.url.clone()
         } else {
-            format!("{}/{}", config.base_url, request.url)
+            format!("{}{}", config.base_url, request.url)
         };
 
         let client = reqwest::blocking::Client::builder()
@@ -51,6 +51,10 @@ impl Client {
     }
 
     pub fn send(self) -> reqwest::Result<Response> {
+        // {
+        //     let c = self.client.try_clone().unwrap().build().unwrap();
+        //     println!("{:?}", c);
+        // }
         self.client.send()
     }
 }
