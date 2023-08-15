@@ -17,6 +17,34 @@ pub struct Config {
     pub requests: Vec<Request>,
 }
 
+//1. deserializes `t`
+//2. performs string replace for the resultant string
+//3. serizalizes the string after the replace and returns it
+//4. it is assumed the caller would substitute (i.e. override) the returned value to `t`
+fn variable_expansion<T>(t: &T, variables: &HashMap<String, String>) -> Result<T, Box<dyn Error>>
+where
+    T: Serialize + for<'de> Deserialize<'de>,
+{
+    let json_string = serde_json::to_string(t).unwrap();
+    let mut expanded_json_string = json_string.clone();
+    let regex = Regex::new(r#"\$\{([^}]+)}"#)?;
+    let mut processed = HashSet::new();
+    for c in regex.captures_iter(&json_string) {
+        let placeholder = c.get(0).unwrap().as_str();
+        let variable_name = c.get(1).unwrap().as_str();
+        if (processed.contains(&variable_name)) {
+            continue;
+        }
+        processed.insert(variable_name);
+        if let Some(v) = variables.get(variable_name) {
+            expanded_json_string = expanded_json_string.replace(placeholder, v);
+        } else {
+            return Err(format!("variable `{}` is not defined", variable_name).into());
+        }
+    }
+    serde_json::from_str(&expanded_json_string).map_err(|e| e.into())
+}
+
 impl Config {
     pub fn new(config_file: &str) -> Result<Self, Box<dyn Error>> {
         let json_string: String = {
@@ -33,6 +61,7 @@ impl Config {
         let mut ret = serde_json::from_str::<Self>(&json_string)?;
 
         //performs variable expansion
+        ret.default_header = variable_expansion(&ret.default_header, &ret.variables)?;
         for i in 0..ret.requests.len() {
             //merges the global `variables` and local-to-request `variables`
             let mut variables = ret.variables.clone();
@@ -41,30 +70,7 @@ impl Config {
                     variables.insert(k.to_owned(), v.to_owned());
                 });
             }
-
-            //1. deserializes `ret.requests[i]`
-            //2. performs string replace for the resultant string
-            //3. serizalizes the string after the replace
-            //4. overrides `ret.requests[i]` by the result
-            let json_string = serde_json::to_string(&ret.requests[i]).unwrap();
-            let mut expanded_json_string = json_string.clone();
-            let regex = Regex::new(r#"\$\{([^}]+)}"#)?;
-            let mut processed = HashSet::new();
-            for c in regex.captures_iter(&json_string) {
-                let placeholder = c.get(0).unwrap().as_str();
-                let variable_name = c.get(1).unwrap().as_str();
-                if (processed.contains(&variable_name)) {
-                    continue;
-                }
-                processed.insert(variable_name);
-                if let Some(v) = variables.get(variable_name) {
-                    expanded_json_string = expanded_json_string.replace(placeholder, v);
-                } else {
-                    return Err(format!("variable `{}` is not defined", variable_name).into());
-                }
-
-                ret.requests[i] = serde_json::from_str(&expanded_json_string)?;
-            }
+            ret.requests[i] = variable_expansion(&ret.requests[i], &variables)?;
         }
 
         ret.validate()?;
