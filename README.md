@@ -41,6 +41,7 @@ Arguments:
 
 Options:
   -f, --file <FILE>  Config file [default: ./ycurl.json]
+  -v, --verbose      Verbose mode
   -h, --help         Print help
   -V, --version      Print version
 ```

@@ -11,4 +11,8 @@ pub struct Args {
     /// Index or name of the request sent
     #[arg()]
     pub index: Option<String>,
+
+    /// Verbose mode
+    #[arg(short, long)]
+    pub verbose: bool,
 }

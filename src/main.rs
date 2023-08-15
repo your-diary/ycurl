@@ -61,6 +61,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new(&config, request)?;
     let res = client.send()?;
 
+    if (args.verbose) {
+        println!("{}\n", request.url);
+    }
     ycurl::pretty_print(res)?;
 
     Ok(())
