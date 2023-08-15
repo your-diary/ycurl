@@ -37,7 +37,7 @@ fn create_local_variables(
     for (k, s) in variables {
         let mut s_expanded = s.clone();
         let mut processed = HashSet::new();
-        for c in regex.captures_iter(&s) {
+        for c in regex.captures_iter(s) {
             let placeholder = c.get(0).unwrap().as_str();
             let variable_name = c.get(1).unwrap().as_str();
             if (processed.contains(&variable_name)) {
@@ -198,6 +198,109 @@ mod tests_variable_expansion {
     //}}}
 }
 
+//recursively replaces `Value::String(s)` with `Value::Number` or `Value::Bool` if `s` starts with `number:` or `bool:`
+//This is useful for example when you want to perform a variable expansion and then cast the result to a number (e.g. `"id": "number:${id}"`).
+fn type_cast(v: &mut Value) -> Result<(), Box<dyn Error>> {
+    match v {
+        Value::String(s) => {
+            if (s.starts_with("number:")) {
+                *v = Value::Number(s.replace("number:", "").parse()?);
+            } else if (s.starts_with("bool:")) {
+                *v = Value::Bool(s.replace("bool:", "").parse()?);
+            }
+        }
+        Value::Array(l) => {
+            for e in l.iter_mut() {
+                type_cast(e)?;
+            }
+        }
+        Value::Object(o) => {
+            for (_, v) in o.iter_mut() {
+                type_cast(v)?;
+            }
+        }
+        _ => (),
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests_type_cast {
+    //{{{
+    use super::*;
+
+    use serde_json::json;
+
+    #[test]
+    // #[ignore]
+    fn test01() {
+        let mut input = json!({
+            "a": "123",
+            "b": "true",
+            "c": {
+                "d": [
+                    {
+                        "e": "123",
+                        "f": "-123",
+                        "g": "3.14",
+                        "h": "true",
+                        "i": "false",
+                        "j": "number:123",
+                        "k": "number:-123",
+                        "l": "number:3.14",
+                        "m": "bool:true",
+                        "n": "bool:false"
+                    }
+                ]
+            }
+        });
+
+        let expected = json!({
+            "a": "123",
+            "b": "true",
+            "c": {
+                "d": [
+                    {
+                        "e": "123",
+                        "f": "-123",
+                        "g": "3.14",
+                        "h": "true",
+                        "i": "false",
+                        "j": 123,
+                        "k": -123,
+                        "l": 3.14,
+                        "m": true,
+                        "n": false
+                    }
+                ]
+            }
+        });
+
+        let ret = type_cast(&mut input);
+        println!("{:?}", ret);
+        assert!(ret.is_ok());
+
+        assert_eq!(expected, input);
+    }
+
+    #[test]
+    // #[ignore]
+    fn test02() {
+        let mut input = json!({
+            "a": "bool:abc"
+        });
+        let ret = type_cast(&mut input);
+        println!("{:?}", ret);
+        assert!(ret.is_err());
+        assert_eq!(
+            "provided string was not `true` or `false`",
+            ret.map_err(|e| e.to_string()).unwrap_err()
+        );
+    }
+
+    //}}}
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Config {
     pub base_url: String,
@@ -245,7 +348,7 @@ impl Config {
     }
 
     fn new_with_json_string(json_string: &str) -> Result<Self, Box<dyn Error>> {
-        let mut ret = serde_json::from_str::<Self>(&json_string)?;
+        let mut ret = serde_json::from_str::<Self>(json_string)?;
 
         ret.variables = create_local_variables(&ret.variables, None)?;
 
@@ -258,6 +361,14 @@ impl Config {
                 ret.requests[i] = variable_expansion(&ret.requests[i], &variables)?;
             } else {
                 ret.requests[i] = variable_expansion(&ret.requests[i], &ret.variables)?;
+            }
+        }
+
+        for i in 0..ret.requests.len() {
+            if let Some(ref mut v) = ret.requests[i].body {
+                for (_, v) in v.iter_mut() {
+                    type_cast(v)?;
+                }
             }
         }
 
@@ -329,8 +440,8 @@ mod tests_config {
                         "body": {
                             "f": "g",
                             "h": "${user_id}_${name}_${user_id}_${color}",
-                            "i": "${user_id}",
-                            "j": "${flag}",
+                            "i": "number:${user_id}",
+                            "j": "bool:${flag}",
                             "k": "${var1}",
                             "l": "${var2}"
                         }
@@ -375,8 +486,8 @@ mod tests_config {
                     "body": {
                         "f": "g",
                         "h": "50_Mike_50_blue",
-                        "i": "50",
-                        "j": "true",
+                        "i": 50,
+                        "j": true,
                         "k": "true",
                         "l": "true_123"
                     }

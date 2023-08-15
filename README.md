@@ -79,7 +79,8 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
             "name": "create_user",
             "description": "creates a user",
             "variables": {
-                "password": "abc"
+                "password": "abc",
+                "age": 18
             },
             "url": "/user",
             "method": "POST",
@@ -88,7 +89,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
             "body": {
                 "name": "${name}",
                 "password": "${password}",
-                "age": 18
+                "age": "number:${age}"
             }
         }
     ]
@@ -134,7 +135,7 @@ Global variables are defined as `Map<String, String>` in the top-level `variable
 }
 ```
 
-Every expression of the form `${<variable name>}` is replaced by the value of the variable `<variable name>`.
+Every expression of the form `${<variable name>}` inside a string is replaced by the value of the variable `<variable name>`.
 
 ```json
 {
@@ -164,6 +165,31 @@ It is possible a variable definition itself includes variables to be expanded. F
         "email": "${name}_${id}@example.com"
     },
     ...
+}
+```
+
+### 3.4 Type Cast
+
+Though a variable expansion occurs only in a string, there should be cases where you want to perform a variable expansion for another datatypes.
+
+```json
+"body": {
+    #This is invalid as `${id}` is not quoted. 
+    "id": ${id}
+}
+```
+
+For that purpose, type cast is performed when a string starts with `number:` or `bool:`.
+```json
+"variables": {
+    "id": "123",
+    "flag": "true"
+}
+"body": {
+    #same as `"id": 123123`
+    "id": "number:${id}${id}",
+    #same as `"flag": true`
+    "flag": "bool:${flag}"
 }
 ```
 
