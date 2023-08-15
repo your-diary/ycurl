@@ -2,7 +2,7 @@
 
 ## 1. About
 
-A JSON-based cross-platform CUI client for HTTP testing.
+A JSON-based cross-platform CUI client for HTTP testing with a variable expansion functionality.
 
 ## 2. Usage
 
@@ -54,11 +54,11 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 ```json
 {
     "base_url": "http://localhost:3000",
-    "default_header": {
-        "Content-Type": "application/json"
-    },
     "variables": {
         "name": "Mike"
+    },
+    "default_header": {
+        "Content-Type": "application/json"
     },
     "requests": [
         {
@@ -154,5 +154,17 @@ Every expression of the form `${<variable name>}` is replaced by the value of th
 }
 ```
 
-<!-- vim: set spell: -->
+It is possible a variable definition itself includes variables to be expanded. For example, this is a valid definition:
+```json
+{
+    ...
+    "variables": {
+        "id": "123",
+        "name": "Mike",
+        "email": "${name}_${id}@example.com"
+    },
+    ...
+}
+```
 
+<!-- vim: set spell: -->
