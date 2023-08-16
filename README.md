@@ -46,11 +46,15 @@ Options:
   -V, --version      Print version
 ```
 
-## 3. Configurations
+## 3. Logging
+
+`ycurl` writes logs to `~/logs/ycurl.txt`. The directory `~/logs` is created if not exists.
+
+## 4. Configurations
 
 By default, requests are defined in `./ycurl.json`. This can be overridden via `-f <file>` option.
 
-### 3.1 Syntax
+### 4.1 Syntax
 
 ```json
 {
@@ -97,7 +101,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 }
 ```
 
-### 3.2 Comments
+### 4.2 Comments
 
 Lines start with `#`, optionally preceded by spaces, are treated as comments.
 
@@ -112,7 +116,7 @@ Lines start with `#`, optionally preceded by spaces, are treated as comments.
 }
 ```
 
-### 3.3 Variable Expansion
+### 4.3 Variable Expansion
 
 Global variables are defined as `Map<String, String>` in the top-level `variables` field, and local-to-request variables are defined in `variables` field inside the request definition.
 
@@ -169,7 +173,7 @@ It is possible a variable definition itself includes variables to be expanded. F
 }
 ```
 
-### 3.4 Type Cast
+### 4.4 Type Cast
 
 Though a variable expansion occurs only in a string, there should be cases where you want to perform a variable expansion for another datatypes.
 

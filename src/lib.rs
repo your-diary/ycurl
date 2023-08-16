@@ -8,9 +8,12 @@ use serde_json::Value;
 pub mod args;
 pub mod client;
 pub mod config;
+pub mod logger;
 
-pub fn pretty_print(res: Response) -> Result<(), Box<dyn Error>> {
+pub fn pretty_print(res: Response, logger: &logger::Logger) -> Result<(), Box<dyn Error>> {
     println!("{}", res.status());
+    logger.log("\n[response]\n")?;
+    logger.log(&format!("{}", res.status()))?;
 
     let mut body = res.text()?;
     if (body.trim().is_empty()) {
@@ -41,6 +44,8 @@ pub fn pretty_print(res: Response) -> Result<(), Box<dyn Error>> {
         .print()
         .unwrap();
     println!();
+
+    logger.log(&format!("\n{}", body))?;
 
     Ok(())
 }

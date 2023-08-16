@@ -6,6 +6,7 @@ use reqwest::{
 };
 
 use super::config::{Config, HTTPMethod, Request};
+use super::logger::Logger;
 
 pub struct Client {
     client: reqwest::blocking::RequestBuilder,
@@ -20,7 +21,11 @@ fn create_headermap(m: &HashMap<String, String>) -> HeaderMap {
 }
 
 impl Client {
-    pub fn new(config: &Config, request: &Request) -> Result<Self, Box<dyn Error>> {
+    pub fn new(
+        config: &Config,
+        request: &Request,
+        logger: &Logger,
+    ) -> Result<Self, Box<dyn Error>> {
         let url = if (request.url.starts_with("http")) {
             request.url.clone()
         } else {
@@ -46,6 +51,10 @@ impl Client {
         if let Some(b) = &request.body {
             client = client.body(serde_json::to_string_pretty(b).unwrap());
         }
+
+        logger.log("[request]\n")?;
+        logger.log(&format!("client = {:?}\n", client))?;
+        logger.log(&format!("body = {:?}", request.body))?;
 
         Ok(Self { client })
     }
