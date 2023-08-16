@@ -82,6 +82,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
             "body": null
         },
         {
+            "disabled": true,
             "name": "create_user",
             "description": "creates a user",
             "variables": {

@@ -26,6 +26,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     if (args.index.is_none()) {
         let mut l = vec![];
         for i in 0..config.requests.len() {
+            if (config.requests[i].disabled) {
+                continue;
+            }
             l.push(format!(
                 r#"{{"index": {}, "name": "{}", "url": "{}"}}"#,
                 i, config.requests[i].name, config.requests[i].url
@@ -59,6 +62,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             return Err("no entry found for the name".into());
         }
     };
+
+    if (request.disabled) {
+        return Err("disabled request".into());
+    }
 
     let mut logger = Logger::new()?;
     logger.log(&format!(

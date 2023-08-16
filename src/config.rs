@@ -313,6 +313,8 @@ pub struct Config {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Request {
+    #[serde(default)]
+    pub disabled: bool,
     pub name: String,
     pub description: String,
     pub variables: Option<IndexMap<String, String>>,
