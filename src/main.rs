@@ -60,19 +60,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     };
 
-    let logger = Logger::new()?;
+    let mut logger = Logger::new()?;
     logger.log(&format!(
         "\n-------------------- {} --------------------",
         Local::now().format("%Y/%m/%d(%a)%H:%M:%S")
     ))?;
 
-    let client = Client::new(&config, request, &logger)?;
+    let client = Client::new(&config, request, &mut logger)?;
     let res = client.send()?;
 
     if (args.verbose) {
         println!("{}\n", request.url);
     }
-    ycurl::pretty_print(res, &logger)?;
+    ycurl::pretty_print(res, &mut logger)?;
 
     Ok(())
 }

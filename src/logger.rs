@@ -7,7 +7,7 @@ use std::{
 };
 
 pub struct Logger {
-    log_file: String,
+    log_file: File,
 }
 
 impl Logger {
@@ -24,14 +24,15 @@ impl Logger {
             File::create(p)?;
         }
 
-        Ok(Self { log_file })
-    }
-
-    pub fn log(&self, s: &str) -> Result<(), Box<dyn Error>> {
-        fs::OpenOptions::new()
+        let file = fs::OpenOptions::new()
             .append(true)
             .create(true)
-            .open(&self.log_file)?
+            .open(&log_file)?;
+        Ok(Self { log_file: file })
+    }
+
+    pub fn log(&mut self, s: &str) -> Result<(), Box<dyn Error>> {
+        self.log_file
             .write_all((s.to_owned() + "\n").as_bytes())
             .map_err(|e| e.into())
     }

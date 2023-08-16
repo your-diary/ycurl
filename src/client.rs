@@ -24,7 +24,7 @@ impl Client {
     pub fn new(
         config: &Config,
         request: &Request,
-        logger: &Logger,
+        logger: &mut Logger,
     ) -> Result<Self, Box<dyn Error>> {
         let url = if (request.url.starts_with("http")) {
             request.url.clone()
@@ -53,8 +53,22 @@ impl Client {
         }
 
         logger.log("[request]\n")?;
-        logger.log(&format!("client = {:?}\n", client))?;
-        logger.log(&format!("body = {:?}", request.body))?;
+        if let Some(rb) = client.try_clone() {
+            if let Ok(req) = rb.build() {
+                logger.log(&format!("method: {}\n", req.method()))?;
+                logger.log(&format!("url: {}\n", req.url().as_str()))?;
+                logger.log(&format!("header: {:?}\n", req.headers()))?;
+            } else {
+                logger.log(&format!("request: {:?}\n", client))?;
+            }
+        } else {
+            logger.log(&format!("request: {:?}\n", client))?;
+        }
+        if let Some(body) = &request.body {
+            logger.log(&format!("body: {:?}", body))?;
+        } else {
+            logger.log("body: None")?;
+        }
 
         Ok(Self { client })
     }

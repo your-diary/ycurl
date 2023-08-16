@@ -10,10 +10,11 @@ pub mod client;
 pub mod config;
 pub mod logger;
 
-pub fn pretty_print(res: Response, logger: &logger::Logger) -> Result<(), Box<dyn Error>> {
+pub fn pretty_print(res: Response, logger: &mut logger::Logger) -> Result<(), Box<dyn Error>> {
     println!("{}", res.status());
     logger.log("\n[response]\n")?;
     logger.log(&format!("{}", res.status()))?;
+    logger.log(&format!("\n{:?}", res.headers()))?;
 
     let mut body = res.text()?;
     if (body.trim().is_empty()) {
