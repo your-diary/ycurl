@@ -304,7 +304,9 @@ mod tests_type_cast {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Config {
     pub base_url: String,
+    #[serde(default)]
     pub variables: IndexMap<String, String>,
+    #[serde(default)]
     pub default_header: HashMap<String, String>,
     pub requests: Vec<Request>,
 }
@@ -316,7 +318,9 @@ pub struct Request {
     pub variables: Option<IndexMap<String, String>>,
     pub url: String,
     pub method: HTTPMethod,
+    #[serde(default)]
     pub header: HashMap<String, String>,
+    #[serde(default)]
     pub params: HashMap<String, Value>,
     pub body: Option<HashMap<String, Value>>,
 }
