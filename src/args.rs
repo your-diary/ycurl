@@ -12,6 +12,10 @@ pub struct Args {
     #[arg()]
     pub index: Option<String>,
 
+    /// Show response header
+    #[arg(long)]
+    pub show_header: bool,
+
     /// Verbose mode
     #[arg(short, long)]
     pub verbose: bool,

@@ -10,8 +10,16 @@ pub mod client;
 pub mod config;
 pub mod logger;
 
-pub fn pretty_print(res: Response, logger: &mut logger::Logger) -> Result<(), Box<dyn Error>> {
+pub fn pretty_print(
+    res: Response,
+    logger: &mut logger::Logger,
+    should_show_header: bool,
+) -> Result<(), Box<dyn Error>> {
     println!("{}", res.status());
+    if (should_show_header) {
+        println!("\n{:?}", res.headers());
+    }
+
     logger.log("\n[response]\n")?;
     logger.log(&format!("{}", res.status()))?;
     logger.log(&format!("\n{:?}", res.headers()))?;

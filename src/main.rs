@@ -72,7 +72,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     if (args.verbose) {
         println!("{}\n", request.url);
     }
-    ycurl::pretty_print(res, &mut logger)?;
+    ycurl::pretty_print(res, &mut logger, args.show_header)?;
 
     Ok(())
 }
