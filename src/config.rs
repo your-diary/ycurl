@@ -303,12 +303,22 @@ mod tests_type_cast {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Config {
+    #[serde(default)]
+    pub cli_options: CLIOptions,
     pub base_url: String,
     #[serde(default)]
     pub variables: IndexMap<String, String>,
     #[serde(default)]
     pub default_header: HashMap<String, String>,
     pub requests: Vec<Request>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+pub struct CLIOptions {
+    #[serde(default)]
+    pub show_header: bool,
+    #[serde(default)]
+    pub verbose: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

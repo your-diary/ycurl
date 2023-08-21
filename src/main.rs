@@ -21,7 +21,13 @@ macro_rules! o {
 fn main() -> Result<(), Box<dyn Error>> {
     let args = args::Args::parse();
 
-    let config = config::Config::new(&args.file)?;
+    let mut config = config::Config::new(&args.file)?;
+    if (args.show_header) {
+        config.cli_options.show_header = true;
+    }
+    if (args.verbose) {
+        config.cli_options.verbose = true;
+    }
 
     if (args.index.is_none()) {
         let mut l = vec![];
@@ -76,10 +82,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new(&config, request, &mut logger)?;
     let res = client.send()?;
 
-    if (args.verbose) {
+    if (config.cli_options.verbose) {
         println!("{}\n", request.url);
     }
-    ycurl::pretty_print(res, &mut logger, args.show_header)?;
+    ycurl::pretty_print(res, &mut logger, &config)?;
 
     Ok(())
 }

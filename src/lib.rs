@@ -13,10 +13,10 @@ pub mod logger;
 pub fn pretty_print(
     res: Response,
     logger: &mut logger::Logger,
-    should_show_header: bool,
+    config: &config::Config,
 ) -> Result<(), Box<dyn Error>> {
     println!("{}", res.status());
-    if (should_show_header) {
+    if (config.cli_options.show_header) {
         println!("\n{:?}", res.headers());
     }
 

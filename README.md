@@ -59,6 +59,10 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 
 ```json
 {
+    "cli_options": {
+        "show_header": true,
+        "verbose": false
+    },
     "base_url": "http://localhost:3000",
     "variables": {
         "name": "Mike"
