@@ -55,7 +55,7 @@ Options:
 
 By default, requests are defined in `./ycurl.json`. This can be overridden via `-f <file>` option.
 
-### 4.1 Syntax
+### 4.1 Examples
 
 ```json
 {
@@ -107,7 +107,42 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 }
 ```
 
-### 4.2 Comments
+### 4.2 Fields
+
+#### 4.2.1 Top-Level Fields
+
+| Name | Type | Required | Description |
+| :- | :- | :- | :- |
+| `description` | `String` | | Any string used for comment. |
+| `cli_options` | `CLIOptions` | | Default values for the command-line options. |
+| `base_url` | `String` | ✓ | Base URL like `http://localhost:3000`. |
+| `variables` | `Map<String, String>` | | Global [variables](#44-variable-expansion). |
+| `default_header` | `Map<String, String>` | | Default HTTP request headers. |
+| `requests` | `Vec<Request>` | ✓ | Requests sent. |
+
+
+### 4.2.2 `CliOptions`
+
+| Name | Type | Required | Description |
+| :- | :- | :- | :- |
+| `show_header` | `bool` | | Default value for `--show-header` option. |
+| `verbose` | `bool` | | Default value for `--verbose` option. |
+
+### 4.2.3 `Request`
+
+| Name | Type | Required | Description |
+| :- | :- | :- | :- |
+| `disabled` | `bool` | | Disables this request. |
+| `name` | `String` | ✓ | Arbitrary human-readable name. |
+| `description` | `String` | | Any string used for comment. |
+| `variables` | `Map<String, String>` | | Local [variables](#44-variable-expansion), which merges into and overrides the global variables. |
+| `url` | `String` | ✓ | Path part of URL (e.g. `/user/create`) appended to `baser_url`. |
+| `method` | `String` | ✓ | HTTP method. The value shall be an uppercase HTTP method like `GET` or `POST`. |
+| `header` | `Map<String, String>` | | HTTP request headers which merges into and overrides `default_header`. |
+| `params` | `Map<String, Any>` | | Query parameters. Specifying query parameters as the part of `url` (e.g. `/user/list?page=3&count=10`) is also supported. |
+| `body` | `Map<String, Any>` | | Request body. Currently, this is sent as a JSON string though `Content-Type: application/json` is not implied. |
+
+### 4.3 Comments
 
 Lines start with `#`, optionally preceded by spaces, are treated as comments.
 
@@ -122,13 +157,14 @@ Lines start with `#`, optionally preceded by spaces, are treated as comments.
 }
 ```
 
-### 4.3 Variable Expansion
+### 4.4 Variable Expansion
 
 Global variables are defined as `Map<String, String>` in the top-level `variables` field, and local-to-request variables are defined in `variables` field inside the request definition.
 
 ```json
 {
     "base_url": "http://localhost:3000",
+    #global variables
     "variables": {
         "name": "Mike"
     },
@@ -137,6 +173,7 @@ Global variables are defined as `Map<String, String>` in the top-level `variable
         {
             "name": "create_user",
             "description": "creates a user",
+            #local variables
             "variables": {
                 "password": "abc"
             },
@@ -146,7 +183,7 @@ Global variables are defined as `Map<String, String>` in the top-level `variable
 }
 ```
 
-Every expression of the form `${<variable name>}` inside a string is replaced by the value of the variable `<variable name>`.
+Every expression of the form `${<variable name>}` ***inside a string*** is replaced by the value of the variable `<variable name>`.
 
 ```json
 {
@@ -179,7 +216,7 @@ It is possible a variable definition itself includes variables to be expanded. F
 }
 ```
 
-### 4.4 Type Cast
+### 4.5 Type Cast
 
 Though a variable expansion occurs only in a string, there should be cases where you want to perform a variable expansion for another datatypes.
 
