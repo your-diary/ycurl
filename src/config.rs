@@ -304,6 +304,8 @@ mod tests_type_cast {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Config {
     #[serde(default)]
+    pub description: String,
+    #[serde(default)]
     pub cli_options: CLIOptions,
     pub base_url: String,
     #[serde(default)]
@@ -326,6 +328,7 @@ pub struct Request {
     #[serde(default)]
     pub disabled: bool,
     pub name: String,
+    #[serde(default)]
     pub description: String,
     pub variables: Option<IndexMap<String, String>>,
     pub url: String,
