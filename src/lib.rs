@@ -3,7 +3,7 @@ use std::error::Error;
 use bat::PrettyPrinter;
 use reqwest::blocking::Response;
 use serde::Serialize;
-use serde_json::Value;
+use serde_json::{Map, Value};
 
 pub mod args;
 pub mod client;
@@ -15,9 +15,24 @@ pub fn pretty_print(
     logger: &mut logger::Logger,
     config: &config::Config,
 ) -> Result<(), Box<dyn Error>> {
-    println!("{}", res.status());
+    if (res.status().is_success()) {
+        println!("\u{001B}[032m{}\u{001B}[0m", res.status());
+    } else {
+        println!("\u{001B}[031m{}\u{001B}[0m", res.status());
+    }
     if (config.cli_options.show_header) {
-        println!("\n{:?}", res.headers());
+        let mut m = Map::new();
+        for (k, v) in res.headers() {
+            m.insert(k.to_string(), Value::String(v.to_str()?.to_owned()));
+        }
+        let s = serde_json::to_string(&Value::from(m))?;
+        println!();
+        PrettyPrinter::new()
+            .input_from_bytes(s.as_bytes())
+            .language("json")
+            .tab_width(Some(4))
+            .true_color(false)
+            .print()?;
     }
 
     logger.log("\n[response]\n")?;
