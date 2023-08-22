@@ -33,6 +33,7 @@ pub fn pretty_print(
             .tab_width(Some(4))
             .true_color(false)
             .print()?;
+        println!();
     }
 
     logger.log("\n[response]\n")?;
