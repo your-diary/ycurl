@@ -424,6 +424,11 @@ mod tests_config {
     fn test01() {
         let input = r#"
             {
+                "cli_options": {
+                    "show_header": true,
+                    "verbose": false
+                },
+                "description": "desc",
                 "base_url": "http://example.com",
                 "variables": {
                     "id": "123",
@@ -437,6 +442,7 @@ mod tests_config {
                 },
                 "requests": [
                     {
+                        "disabled": false,
                         "name": "req1",
                         "description": "desc",
                         "variables": {
@@ -470,6 +476,11 @@ mod tests_config {
         "#;
 
         let expected = json!({
+            "cli_options": {
+                "show_header": true,
+                "verbose": false,
+            },
+            "description": "desc",
             "base_url": "http://example.com",
             "variables": {
                 "id": "123",
@@ -483,6 +494,7 @@ mod tests_config {
             },
             "requests": [
                 {
+                    "disabled": false,
                     "name": "req1",
                     "description": "desc",
                     "variables": {
