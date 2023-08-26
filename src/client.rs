@@ -4,6 +4,7 @@ use itertools::Itertools;
 use reqwest::{
     blocking::Response,
     header::{HeaderMap, HeaderName},
+    redirect::Policy,
 };
 
 use super::config::{Config, HTTPMethod, Request};
@@ -35,6 +36,11 @@ impl Client {
 
         let client = reqwest::blocking::Client::builder()
             .default_headers(create_headermap(&config.default_header))
+            .redirect(if (config.cli_options.disable_redirect) {
+                Policy::none()
+            } else {
+                Policy::limited(10)
+            })
             .build()?;
 
         let mut client = match (request.method) {

@@ -320,6 +320,8 @@ pub struct CLIOptions {
     #[serde(default)]
     pub show_header: bool,
     #[serde(default)]
+    pub disable_redirect: bool,
+    #[serde(default)]
     pub verbose: bool,
 }
 
@@ -478,6 +480,7 @@ mod tests_config {
         let expected = json!({
             "cli_options": {
                 "show_header": true,
+                "disable_redirect": false,
                 "verbose": false,
             },
             "description": "desc",

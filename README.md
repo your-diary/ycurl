@@ -40,12 +40,13 @@ Arguments:
   [INDEX]  Index or name of the request sent
 
 Options:
-  -f, --file <FILE>  Config file [default: ./ycurl.json]
-      --show-header  Show response header
-      --complete     Output shell completion code
-  -v, --verbose      Verbose mode
-  -h, --help         Print help
-  -V, --version      Print version
+  -f, --file <FILE>       Config file [default: ./ycurl.json]
+      --show-header       Show response header
+      --disable-redirect  Disable following redirects
+      --complete          Output shell completion code
+  -v, --verbose           Verbose mode
+  -h, --help              Print help
+  -V, --version           Print version
 ```
 
 ## 3. Logging

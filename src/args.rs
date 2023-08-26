@@ -16,6 +16,10 @@ pub struct Args {
     #[arg(long)]
     pub show_header: bool,
 
+    /// Disable following redirects
+    #[arg(long)]
+    pub disable_redirect: bool,
+
     /// Output shell completion code
     #[arg(long)]
     pub complete: bool,
