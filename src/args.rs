@@ -16,6 +16,10 @@ pub struct Args {
     #[arg(long)]
     pub show_header: bool,
 
+    /// Output shell completion code
+    #[arg(long)]
+    pub complete: bool,
+
     /// Verbose mode
     #[arg(short, long)]
     pub verbose: bool,

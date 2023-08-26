@@ -29,6 +29,21 @@ fn main() -> Result<(), Box<dyn Error>> {
         config.cli_options.verbose = true;
     }
 
+    if (args.complete) {
+        let request_names = config.requests.into_iter().map(|e| e.name).join(" ");
+        let cli_options = "-f --file --show-header --complete -v --verbose";
+        let words = format!("{} {}", request_names, cli_options);
+
+        let command = format!(
+            "complete -f -W '{}' -X '!@({}|*.json)' ycurl",
+            words,
+            words.replace(' ', "|")
+        );
+        println!("{}", command);
+
+        return Ok(());
+    }
+
     if (args.index.is_none()) {
         let mut l = vec![];
         for i in 0..config.requests.len() {

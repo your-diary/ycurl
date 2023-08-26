@@ -42,6 +42,7 @@ Arguments:
 Options:
   -f, --file <FILE>  Config file [default: ./ycurl.json]
       --show-header  Show response header
+      --complete     Output shell completion code
   -v, --verbose      Verbose mode
   -h, --help         Print help
   -V, --version      Print version
