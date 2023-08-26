@@ -20,6 +20,10 @@ pub struct Args {
     #[arg(long)]
     pub disable_redirect: bool,
 
+    /// Allow `disabled` request to be sent
+    #[arg(long)]
+    pub include_disabled: bool,
+
     /// Output shell completion code
     #[arg(long)]
     pub complete: bool,

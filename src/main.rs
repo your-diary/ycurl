@@ -87,7 +87,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     };
 
-    if (request.disabled) {
+    if (request.disabled && !args.include_disabled) {
         return Err("disabled request".into());
     }
 

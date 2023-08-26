@@ -43,6 +43,7 @@ Options:
   -f, --file <FILE>       Config file [default: ./ycurl.json]
       --show-header       Show response header
       --disable-redirect  Disable following redirects
+      --include-disabled  Allow `disabled` request to be sent
       --complete          Output shell completion code
   -v, --verbose           Verbose mode
   -h, --help              Print help
