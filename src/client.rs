@@ -1,5 +1,6 @@
 use std::{collections::HashMap, error::Error};
 
+use itertools::Itertools;
 use reqwest::{
     blocking::Response,
     header::{HeaderMap, HeaderName},
@@ -50,6 +51,19 @@ impl Client {
             .query(&request.params);
         if let Some(b) = &request.body {
             client = client.body(serde_json::to_string_pretty(b).unwrap());
+        }
+
+        if (config.cli_options.verbose) {
+            if (request.params.is_empty()) {
+                println!("{}\n", request.url);
+            } else {
+                let query_parameters = request
+                    .params
+                    .iter()
+                    .map(|(k, v)| format!("{}={}", k, v.to_string().trim_matches('"')))
+                    .join("&");
+                println!("{}?{}\n", request.url, query_parameters);
+            }
         }
 
         logger.log("[request]\n")?;

@@ -82,18 +82,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new(&config, request, &mut logger)?;
     let res = client.send()?;
 
-    if (config.cli_options.verbose) {
-        if (request.params.is_empty()) {
-            println!("{}\n", request.url);
-        } else {
-            let query_parameters = request
-                .params
-                .iter()
-                .map(|(k, v)| format!("{}={}", k, v))
-                .join("&");
-            println!("{}?{}\n", request.url, query_parameters);
-        }
-    }
     ycurl::pretty_print(res, &mut logger, &config)?;
 
     Ok(())
