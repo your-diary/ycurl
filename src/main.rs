@@ -32,6 +32,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         config.cli_options.verbose = true;
     }
 
+    if (args.show_config) {
+        let config = serde_json::to_value(config)?;
+        let s = ycurl::to_string_pretty_four_space_indent(config);
+        PrettyPrinter::new()
+            .input_from_bytes(s.as_bytes())
+            .language("json")
+            .tab_width(Some(4))
+            .true_color(false)
+            .print()?;
+        return Ok(());
+    }
+
     if (args.complete) {
         let request_names = config.requests.into_iter().map(|e| e.name).join(" ");
         let cli_options = "-f --file --show-header --disable-redirect --complete -v --verbose";

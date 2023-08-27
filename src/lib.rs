@@ -10,6 +10,16 @@ pub mod client;
 pub mod config;
 pub mod logger;
 
+//serializes `Value` with four-space indent
+//ref: |https://stackoverflow.com/a/49087292/8776746|
+pub fn to_string_pretty_four_space_indent(v: Value) -> String {
+    let mut buf = Vec::new();
+    let formatter = serde_json::ser::PrettyFormatter::with_indent(b"    ");
+    let mut ser = serde_json::Serializer::with_formatter(&mut buf, formatter);
+    v.serialize(&mut ser).unwrap();
+    String::from_utf8(buf).unwrap()
+}
+
 pub fn pretty_print(
     res: Response,
     logger: &mut logger::Logger,
@@ -48,15 +58,7 @@ pub fn pretty_print(
 
     let mut printer = PrettyPrinter::new();
     if let Ok(v) = serde_json::from_str::<Value>(&body) {
-        {
-            //serializes it with four-space indent
-            //ref: |https://stackoverflow.com/a/49087292/8776746|
-            let mut buf = Vec::new();
-            let formatter = serde_json::ser::PrettyFormatter::with_indent(b"    ");
-            let mut ser = serde_json::Serializer::with_formatter(&mut buf, formatter);
-            v.serialize(&mut ser).unwrap();
-            body = String::from_utf8(buf).unwrap();
-        }
+        body = to_string_pretty_four_space_indent(v);
         printer.language("json");
     } else if (body.starts_with('<')) {
         printer.language("html");

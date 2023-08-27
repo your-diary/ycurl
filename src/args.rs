@@ -24,6 +24,10 @@ pub struct Args {
     #[arg(long)]
     pub include_disabled: bool,
 
+    /// Show configurations after variable expansion and exit
+    #[arg(long)]
+    pub show_config: bool,
+
     /// Output shell completion code
     #[arg(long)]
     pub complete: bool,

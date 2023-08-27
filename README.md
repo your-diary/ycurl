@@ -44,6 +44,7 @@ Options:
       --show-header       Show response header
       --disable-redirect  Disable following redirects
       --include-disabled  Allow `disabled` request to be sent
+      --show-config       Show configurations after variable expansion and exit
       --complete          Output shell completion code
   -v, --verbose           Verbose mode
   -h, --help              Print help
