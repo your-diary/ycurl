@@ -94,10 +94,6 @@ impl Client {
     }
 
     pub fn send(self) -> reqwest::Result<Response> {
-        // {
-        //     let c = self.client.try_clone().unwrap().build().unwrap();
-        //     println!("{:?}", c);
-        // }
         self.client.send()
     }
 }

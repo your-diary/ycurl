@@ -1,22 +1,12 @@
 use std::error::Error;
 
-use bat::PrettyPrinter;
 use chrono::Local;
 use clap::Parser;
-use itertools::Itertools;
 
 use ycurl::args;
 use ycurl::client::Client;
 use ycurl::config;
 use ycurl::logger::Logger;
-
-#[allow(unused_macros)]
-macro_rules! o {
-    (---)             => { println!("\u{001B}[090m{}\u{001B}[0m", "―".repeat(10)) };
-    ($expr:literal)   => { println!("{}", $expr) };
-    ($expr:expr)      => { println!("{} = {:#?}", stringify!($expr), $expr) };
-    ($($expr:expr),*) => { println!($($expr),*) };
-}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = args::Args::parse();
@@ -33,52 +23,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     if (args.show_config) {
-        let config = serde_json::to_value(config)?;
-        let s = ycurl::to_string_pretty_four_space_indent(config);
-        PrettyPrinter::new()
-            .input_from_bytes(s.as_bytes())
-            .language("json")
-            .tab_width(Some(4))
-            .true_color(false)
-            .print()?;
-        return Ok(());
+        return ycurl::show_config(&config);
     }
 
     if (args.complete) {
-        let request_names = config.requests.into_iter().map(|e| e.name).join(" ");
-        let cli_options = "-f --file --show-headers --disable-redirect --complete -v --verbose";
-        let words = format!("{} {}", request_names, cli_options);
-
-        let command = format!(
-            "complete -f -W '{}' -X '!@({}|*.json)' ycurl",
-            words,
-            words.replace(' ', "|")
-        );
-        println!("{}", command);
-
+        ycurl::show_complete(&config);
         return Ok(());
     }
 
     if (args.index.is_none()) {
-        let mut l = vec![];
-        for i in 0..config.requests.len() {
-            if (config.requests[i].disabled) {
-                continue;
-            }
-            l.push(format!(
-                r#"{{"index": {}, "name": "{}", "url": "{}"}}"#,
-                i, config.requests[i].name, config.requests[i].url
-            ));
-        }
-        let s = l.iter().join("\n");
-        PrettyPrinter::new()
-            .input_from_bytes(s.as_bytes())
-            .language("json")
-            .tab_width(Some(4))
-            .true_color(false)
-            .print()?;
-        println!();
-        return Ok(());
+        return ycurl::show_requests(&config);
     }
 
     let request = if let Ok(i) = args.index.as_ref().unwrap().parse::<usize>() {

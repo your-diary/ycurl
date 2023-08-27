@@ -1,6 +1,7 @@
 use std::error::Error;
 
 use bat::PrettyPrinter;
+use itertools::Itertools;
 use reqwest::blocking::Response;
 use serde::Serialize;
 use serde_json::{Map, Value};
@@ -12,12 +13,61 @@ pub mod logger;
 
 //serializes `Value` with four-space indent
 //ref: |https://stackoverflow.com/a/49087292/8776746|
-pub fn to_string_pretty_four_space_indent(v: Value) -> String {
+fn to_string_pretty_four_space_indent(v: Value) -> String {
     let mut buf = Vec::new();
     let formatter = serde_json::ser::PrettyFormatter::with_indent(b"    ");
     let mut ser = serde_json::Serializer::with_formatter(&mut buf, formatter);
     v.serialize(&mut ser).unwrap();
     String::from_utf8(buf).unwrap()
+}
+
+fn bat(s: &str, language: Option<&str>) -> Result<(), Box<dyn Error>> {
+    let mut printer = PrettyPrinter::new();
+    printer
+        .input_from_bytes(s.trim().as_bytes())
+        .tab_width(Some(4))
+        .true_color(false);
+    if let Some(lang) = language {
+        printer.language(lang);
+    }
+    printer.print()?;
+    println!();
+    Ok(())
+}
+
+pub fn show_config(config: &config::Config) -> Result<(), Box<dyn Error>> {
+    let config = serde_json::to_value(config)?;
+    let s = to_string_pretty_four_space_indent(config);
+    bat(&s, Some("json"))
+}
+
+pub fn show_complete(config: &config::Config) {
+    let request_names = config.requests.iter().map(|e| &e.name).join(" ");
+    let cli_options = "-f --file --show-headers --disable-redirect --complete -v --verbose";
+    let words = format!("{} {}", request_names, cli_options);
+
+    let command = format!(
+        "complete -f -W '{}' -X '!@({}|*.json)' ycurl",
+        words,
+        words.replace(' ', "|")
+    );
+    println!("{}", command);
+}
+
+pub fn show_requests(config: &config::Config) -> Result<(), Box<dyn Error>> {
+    let mut l = vec![];
+    for i in 0..config.requests.len() {
+        if (config.requests[i].disabled) {
+            continue;
+        }
+        l.push(format!(
+            r#"{{"index": {}, "name": "{}", "url": "{}"}}"#,
+            i, config.requests[i].name, config.requests[i].url
+        ));
+    }
+    let s = l.iter().join("\n");
+    bat(&s, Some("json"))?;
+    Ok(())
 }
 
 pub fn pretty_print(
@@ -37,13 +87,7 @@ pub fn pretty_print(
         }
         let s = serde_json::to_string(&Value::from(m))?;
         println!();
-        PrettyPrinter::new()
-            .input_from_bytes(s.as_bytes())
-            .language("json")
-            .tab_width(Some(4))
-            .true_color(false)
-            .print()?;
-        println!();
+        bat(&s, Some("json"))?;
     }
 
     logger.log("\n[response]\n")?;
@@ -54,23 +98,17 @@ pub fn pretty_print(
     if (body.trim().is_empty()) {
         return Ok(());
     }
-    println!();
 
-    let mut printer = PrettyPrinter::new();
+    let mut language = None;
     if let Ok(v) = serde_json::from_str::<Value>(&body) {
         body = to_string_pretty_four_space_indent(v);
-        printer.language("json");
+        language = Some("json");
     } else if (body.starts_with('<')) {
-        printer.language("html");
+        language = Some("html");
     }
 
-    printer
-        .input_from_bytes(body.as_bytes())
-        .tab_width(Some(4))
-        .true_color(false)
-        .print()
-        .unwrap();
     println!();
+    bat(&body, language)?;
 
     logger.log(&format!("\n{}", body))?;
 
