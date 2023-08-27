@@ -11,7 +11,7 @@ Everything is defined in JSON and variables are expanded as you expect. Here's a
     "description": "",
     "url": "/users",
     "method": "POST",
-    "header": {
+    "headers": {
         "Content-Type": "application/json"
     },
     "variables": {
@@ -66,7 +66,7 @@ Arguments:
 
 Options:
   -f, --file <FILE>       Config file [default: ./ycurl.json]
-      --show-header       Show response header
+      --show-headers      Show response headers
       --disable-redirect  Disable following redirects
       --include-disabled  Allow `disabled` request to be sent
       --show-config       Show configurations after variable expansion and exit
@@ -89,14 +89,14 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 ```json
 {
     "cli_options": {
-        "show_header": true,
+        "show_headers": true,
         "verbose": false
     },
     "base_url": "http://localhost:3000",
     "variables": {
         "name": "Mike"
     },
-    "default_header": {
+    "default_headers": {
         "Content-Type": "application/json"
     },
     "requests": [
@@ -105,7 +105,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
             "description": "lists users with the given name",
             "url": "/users/name/${name}",
             "method": "GET",
-            "header": {
+            "headers": {
                 "Accept": "application/json"
             },
             "params": {
@@ -124,7 +124,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
             },
             "url": "/user",
             "method": "POST",
-            "header": {},
+            "headers": {},
             "params": {},
             "body": {
                 "name": "${name}",
@@ -146,7 +146,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 | `cli_options` | `CLIOptions` | | Default values for the command-line options. |
 | `base_url` | `String` | ✓ | Base URL like `http://localhost:3000`. |
 | `variables` | `Map<String, String>` | | Global [variables](#44-variable-expansion). |
-| `default_header` | `Map<String, String>` | | Default HTTP request headers. |
+| `default_headers` | `Map<String, String>` | | Default HTTP request headers. |
 | `requests` | `Vec<Request>` | ✓ | Requests sent. |
 
 
@@ -154,7 +154,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 
 | Name | Type | Required | Description |
 | :- | :- | :- | :- |
-| `show_header` | `bool` | | Default value for `--show-header` option. |
+| `show_headers` | `bool` | | Default value for `--show-headers` option. |
 | `disable_redirect` | `bool` | | Default value for `--disable-redirect` option. |
 | `verbose` | `bool` | | Default value for `--verbose` option. |
 
@@ -168,7 +168,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 | `variables` | `Map<String, String>` | | Local [variables](#44-variable-expansion), which merges into and overrides the global variables. |
 | `url` | `String` | ✓ | Path part of URL (e.g. `/user/create`) appended to `baser_url`. |
 | `method` | `String` | ✓ | HTTP method. The value shall be an uppercase HTTP method like `GET` or `POST`. |
-| `header` | `Map<String, String>` | | HTTP request headers which merges into and overrides `default_header`. |
+| `headers` | `Map<String, String>` | | HTTP request headers which merges into and overrides `default_headers`. |
 | `params` | `Map<String, Any>` | | Query parameters. Specifying query parameters as the part of `url` (e.g. `/user/list?page=3&count=10`) is also supported. |
 | `body` | `Map<String, Any>` | | Request body. Currently, this is sent as a JSON string though `Content-Type: application/json` is not implied. |
 
@@ -180,7 +180,7 @@ Lines start with `#`, optionally preceded by spaces, are treated as comments.
 {
     "base_url": "http://localhost:3000",
     #This is a comment.
-    "default_header": {
+    "default_headers": {
         "Content-Type": "application/json"
     },
     ...

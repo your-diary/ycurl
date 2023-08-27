@@ -12,9 +12,9 @@ pub struct Args {
     #[arg()]
     pub index: Option<String>,
 
-    /// Show response header
+    /// Show response headers
     #[arg(long)]
-    pub show_header: bool,
+    pub show_headers: bool,
 
     /// Disable following redirects
     #[arg(long)]

@@ -311,14 +311,14 @@ pub struct Config {
     #[serde(default)]
     pub variables: IndexMap<String, String>,
     #[serde(default)]
-    pub default_header: HashMap<String, String>,
+    pub default_headers: HashMap<String, String>,
     pub requests: Vec<Request>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 pub struct CLIOptions {
     #[serde(default)]
-    pub show_header: bool,
+    pub show_headers: bool,
     #[serde(default)]
     pub disable_redirect: bool,
     #[serde(default)]
@@ -336,7 +336,7 @@ pub struct Request {
     pub url: String,
     pub method: HTTPMethod,
     #[serde(default)]
-    pub header: HashMap<String, String>,
+    pub headers: HashMap<String, String>,
     #[serde(default)]
     pub params: HashMap<String, Value>,
     pub body: Option<HashMap<String, Value>>,
@@ -374,7 +374,7 @@ impl Config {
         ret.variables = create_local_variables(&ret.variables, None)?;
 
         //performs variable expansion
-        ret.default_header = variable_expansion(&ret.default_header, &ret.variables)?;
+        ret.default_headers = variable_expansion(&ret.default_headers, &ret.variables)?;
         for i in 0..ret.requests.len() {
             //merges the global `variables` and local-to-request `variables`
             if let Some(m) = &ret.requests[i].variables {
@@ -427,7 +427,7 @@ mod tests_config {
         let input = r#"
             {
                 "cli_options": {
-                    "show_header": true,
+                    "show_headers": true,
                     "verbose": false
                 },
                 "description": "desc",
@@ -438,7 +438,7 @@ mod tests_config {
                     "email": "${name}_${id}@gmail.com",
                     "color": "red"
                 },
-                "default_header": {
+                "default_headers": {
                     "x": "y",
                     "p": "Bearer: ${id}"
                 },
@@ -456,7 +456,7 @@ mod tests_config {
                         },
                         "url": "/v1/user/${user_id}",
                         "method": "GET",
-                        "header": {
+                        "headers": {
                             "s": "t",
                             "u": "${name}_${user_id}"
                         },
@@ -479,7 +479,7 @@ mod tests_config {
 
         let expected = json!({
             "cli_options": {
-                "show_header": true,
+                "show_headers": true,
                 "disable_redirect": false,
                 "verbose": false,
             },
@@ -491,7 +491,7 @@ mod tests_config {
                 "email": "Mike_123@gmail.com",
                 "color": "red"
             },
-            "default_header": {
+            "default_headers": {
                 "x": "y",
                 "p": "Bearer: 123"
             },
@@ -509,7 +509,7 @@ mod tests_config {
                     },
                     "url": "/v1/user/50",
                     "method": "GET",
-                    "header": {
+                    "headers": {
                         "s": "t",
                         "u": "Mike_50"
                     },

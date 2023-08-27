@@ -30,7 +30,7 @@ pub fn pretty_print(
     } else {
         println!("\u{001B}[031m{}\u{001B}[0m", res.status());
     }
-    if (config.cli_options.show_header) {
+    if (config.cli_options.show_headers) {
         let mut m = Map::new();
         for (k, v) in res.headers() {
             m.insert(k.to_string(), Value::String(v.to_str()?.to_owned()));

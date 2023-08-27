@@ -35,7 +35,7 @@ impl Client {
         };
 
         let client = reqwest::blocking::Client::builder()
-            .default_headers(create_headermap(&config.default_header))
+            .default_headers(create_headermap(&config.default_headers))
             .redirect(if (config.cli_options.disable_redirect) {
                 Policy::none()
             } else {
@@ -53,7 +53,7 @@ impl Client {
         };
 
         client = client
-            .headers(create_headermap(&request.header))
+            .headers(create_headermap(&request.headers))
             .query(&request.params);
         if let Some(b) = &request.body {
             client = client.body(serde_json::to_string_pretty(b).unwrap());
@@ -77,7 +77,7 @@ impl Client {
             if let Ok(req) = rb.build() {
                 logger.log(&format!("method: {}\n", req.method()))?;
                 logger.log(&format!("url: {}\n", req.url().as_str()))?;
-                logger.log(&format!("header: {:?}\n", req.headers()))?;
+                logger.log(&format!("headers: {:?}\n", req.headers()))?;
             } else {
                 logger.log(&format!("request: {:?}\n", client))?;
             }

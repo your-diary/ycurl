@@ -22,8 +22,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args = args::Args::parse();
 
     let mut config = config::Config::new(&args.file)?;
-    if (args.show_header) {
-        config.cli_options.show_header = true;
+    if (args.show_headers) {
+        config.cli_options.show_headers = true;
     }
     if (args.disable_redirect) {
         config.cli_options.disable_redirect = true;
@@ -46,7 +46,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     if (args.complete) {
         let request_names = config.requests.into_iter().map(|e| e.name).join(" ");
-        let cli_options = "-f --file --show-header --disable-redirect --complete -v --verbose";
+        let cli_options = "-f --file --show-headers --disable-redirect --complete -v --verbose";
         let words = format!("{} {}", request_names, cli_options);
 
         let command = format!(
