@@ -4,6 +4,31 @@
 
 A JSON-based cross-platform CUI client for HTTP testing with a variable expansion functionality.
 
+Everything is defined in JSON and variables are expanded as you expect. Here's a sample configuration of a request:
+```json
+{
+    "name": "create_user",
+    "description": "",
+    "url": "/users",
+    "method": "POST",
+    "header": {
+        "Content-Type": "application/json"
+    },
+    "variables": {
+        "birthday": "0725"
+    }
+    "body": {
+        "name": "Mike",
+        "email": "mike_${birthday}@example.com",
+        "birthday": "${birthday}"
+    }
+}
+```
+
+Though only a local-to-request variable is used in this example, global variables are also available (see [*4.4 Variable Expansion*](#44-variable-expansion)).
+
+:warning: Currently, this project is in beta. Breaking changes will casually be introduced.
+
 ## 2. Usage
 
 ### 2.1 Installation
@@ -221,6 +246,8 @@ It is possible a variable definition itself includes variables to be expanded. F
 }
 ```
 
+If you'd like to see the result after performing variable expansion, type cast, etc., use [`--show-config`](#23-show-help) option.
+
 ### 4.5 Type Cast
 
 Though a variable expansion occurs only in a string, there should be cases where you want to perform a variable expansion for another datatypes.
@@ -245,5 +272,7 @@ For that purpose, type cast is performed when a string starts with `number:` or 
     "flag": "bool:${flag}"
 }
 ```
+
+If you'd like to see the result after performing variable expansion, type cast, etc., use [`--show-config`](#23-show-help) option.
 
 <!-- vim: set spell: -->
