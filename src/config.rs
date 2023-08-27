@@ -339,7 +339,7 @@ pub struct Request {
     pub headers: HashMap<String, String>,
     #[serde(default)]
     pub params: HashMap<String, Value>,
-    pub body: Option<HashMap<String, Value>>,
+    pub body: Option<Value>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -386,7 +386,7 @@ impl Config {
         }
 
         for i in 0..ret.requests.len() {
-            if let Some(ref mut v) = ret.requests[i].body {
+            if let Some(Value::Object(ref mut v)) = ret.requests[i].body {
                 for (_, v) in v.iter_mut() {
                     type_cast(v)?;
                 }
@@ -409,6 +409,15 @@ impl Config {
                 .into());
             }
             s.insert(&self.requests[i].name);
+
+            match self.requests[i].body {
+                None | Some(Value::String(_)) | Some(Value::Object(_)) => (),
+                _ => {
+                    return Err(
+                        format!("unsupported `body` type: {:?}", self.requests[i].body).into(),
+                    )
+                }
+            }
         }
         Ok(())
     }

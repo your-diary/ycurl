@@ -6,6 +6,7 @@ use reqwest::{
     header::{HeaderMap, HeaderName},
     redirect::Policy,
 };
+use serde_json::Value;
 
 use super::config::{Config, HTTPMethod, Request};
 use super::logger::Logger;
@@ -56,7 +57,11 @@ impl Client {
             .headers(create_headermap(&request.headers))
             .query(&request.params);
         if let Some(b) = &request.body {
-            client = client.body(serde_json::to_string_pretty(b).unwrap());
+            match b {
+                Value::String(s) => client = client.body(s.to_owned()),
+                Value::Object(o) => client = client.body(serde_json::to_string_pretty(o)?),
+                _ => unreachable!(),
+            }
         }
 
         if (config.cli_options.verbose) {
