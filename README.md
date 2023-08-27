@@ -129,6 +129,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 | Name | Type | Required | Description |
 | :- | :- | :- | :- |
 | `show_header` | `bool` | | Default value for `--show-header` option. |
+| `disable_redirect` | `bool` | | Default value for `--disable-redirect` option. |
 | `verbose` | `bool` | | Default value for `--verbose` option. |
 
 ### 4.2.3 `Request`
