@@ -16,7 +16,7 @@ Everything is defined in JSON and variables are expanded as you expect. Here's a
     },
     "variables": {
         "birthday": "0725"
-    }
+    },
     "body": {
         "name": "Mike",
         "email": "mike_${birthday}@example.com",
