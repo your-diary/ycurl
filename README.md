@@ -27,6 +27,10 @@ Everything is defined in JSON and variables are expanded as you expect. Here's a
 
 Though only a local-to-request variable is used in this example, global variables are also available (see [*4.4 Variable Expansion*](#44-variable-expansion)).
 
+Another notable feature is pretty-print and syntax highlighting for the response body:
+
+![](./readme_assets/ss.png)
+
 :warning: Currently, this project is in beta. Breaking changes will casually be introduced.
 
 ## 2. Usage
