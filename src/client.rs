@@ -23,6 +23,12 @@ fn create_headermap(m: &HashMap<String, String>) -> HeaderMap {
     header
 }
 
+fn merge_headermap(m1: &mut HeaderMap, m2: &HeaderMap) {
+    m2.iter().for_each(|(k, v)| {
+        m1.insert(k, v.clone());
+    });
+}
+
 impl Client {
     pub fn new(
         config: &Config,
@@ -35,8 +41,14 @@ impl Client {
             format!("{}{}", config.base_url, request.url)
         };
 
+        let headers = {
+            let mut m1 = create_headermap(&config.default_headers);
+            let m2 = create_headermap(&request.headers);
+            merge_headermap(&mut m1, &m2);
+            m1
+        };
+
         let client = reqwest::blocking::Client::builder()
-            .default_headers(create_headermap(&config.default_headers))
             .redirect(if (config.cli_options.disable_redirect) {
                 Policy::none()
             } else {
@@ -53,13 +65,22 @@ impl Client {
             HTTPMethod::Head => client.head(url),
         };
 
-        client = client
-            .headers(create_headermap(&request.headers))
-            .query(&request.params);
+        client = client.headers(headers.clone()).query(&request.params);
         if let Some(b) = &request.body {
             match b {
                 Value::String(s) => client = client.body(s.to_owned()),
-                Value::Object(o) => client = client.body(serde_json::to_string_pretty(o)?),
+                Value::Object(o) => {
+                    let mut is_set = false;
+                    if let Some(v) = headers.get("content-type") {
+                        if (v.to_str()?.contains("application/x-www-form-urlencoded")) {
+                            client = client.form(o);
+                            is_set = true;
+                        }
+                    }
+                    if (!is_set) {
+                        client = client.body(serde_json::to_string_pretty(o)?);
+                    }
+                }
                 _ => unreachable!(),
             }
         }
@@ -82,7 +103,7 @@ impl Client {
             if let Ok(req) = rb.build() {
                 logger.log(&format!("method: {}\n", req.method()))?;
                 logger.log(&format!("url: {}\n", req.url().as_str()))?;
-                logger.log(&format!("headers: {:?}\n", req.headers()))?;
+                logger.log(&format!("headers: {:?}\n", headers))?;
             } else {
                 logger.log(&format!("request: {:?}\n", client))?;
             }

@@ -170,7 +170,7 @@ By default, requests are defined in `./ycurl.json`. This can be overridden via `
 | `method` | `String` | ✓ | HTTP method. The value shall be an uppercase HTTP method like `GET` or `POST`. |
 | `headers` | `Map<String, String>` | | HTTP request headers which merges into and overrides `default_headers`. |
 | `params` | `Map<String, Any>` | | Query parameters. Specifying query parameters as the part of `url` (e.g. `/user/list?page=3&count=10`) is also supported. |
-| `body` | `String` or `Map<String, Any>` | | Request body. If the type is `Map<String, Any>`, it is sent as a JSON string though `Content-Type: application/json` is not implied. |
+| `body` | `String` or `Map<String, Any>` | | Request body. When the type is `String`, it is sent as it is. If the type is `Map<String, Any>` and `Content-Type` contains `application/x-www-form-urlencoded`, it is sent as form values. Otherwise, it is sent as a JSON string though `Content-Type: application/json` is not implied. |
 
 ### 4.3 Comments
 
