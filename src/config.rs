@@ -302,6 +302,7 @@ mod tests_type_cast {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Config {
     #[serde(default)]
     pub description: String,
@@ -316,6 +317,7 @@ pub struct Config {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 pub struct CLIOptions {
     #[serde(default)]
     pub show_headers: bool,
@@ -326,6 +328,7 @@ pub struct CLIOptions {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Request {
     #[serde(default)]
     pub disabled: bool,
