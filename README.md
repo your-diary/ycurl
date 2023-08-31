@@ -40,7 +40,7 @@ Another notable feature is pretty-print and syntax highlighting for the response
 #### From GitHub
 
 ```bash
-$ cargo install --git 'https://github.com/your-diary/ycurl'
+$ cargo install --locked --git 'https://github.com/your-diary/ycurl'
 ```
 
 #### From Source
@@ -48,7 +48,7 @@ $ cargo install --git 'https://github.com/your-diary/ycurl'
 ```bash
 $ git clone 'https://github.com/your-diary/ycurl'
 $ cd ycurl/
-$ cargo install --path .
+$ cargo install --locked --path .
 ```
 
 ### 2.2 Run
